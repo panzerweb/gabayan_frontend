@@ -4,37 +4,40 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
 import { useFarmPlanStore } from '@/stores/farmPlanStore'
-import type { CultureSystem, FarmPlanRequest } from '../types/farmPlan'
+import type { FarmPlanRequest } from '../types/farmPlan'
 
 const store = useFarmPlanStore()
 const { loading, error } = storeToRefs(store)
 const router = useRouter()
 
-const cultureSystemOptions: { value: CultureSystem; label: string }[] = [
-  { value: 'pond', label: 'Pond' },
-  { value: 'fish_cage', label: 'Fish Cage' },
-  { value: 'tank', label: 'Tank' },
+const cultureSystemOptions = [
+  { value: 'Pond', label: 'Pond' },
+  { value: 'Fish Cage', label: 'Fish Cage' },
+  { value: 'Tank', label: 'Tank' },
 ]
 
 const form = reactive<FarmPlanRequest>({
-  speciesName: '',
-  cultureSystem: 'pond',
-  pondSize: 0,
+  species: '',
+  cultureSystem: 'Pond',
+  farmArea: 0,
+  stockingDensity: 0,
+  waterSource: '',
   budget: 0,
+  productionGoal: ''
 })
 
 const formErrors = reactive({
-  speciesName: '',
-  pondSize: '',
+  species: '',
+  farmArea: '',
   budget: '',
 })
 
 function validate(): boolean {
-  formErrors.speciesName = form.speciesName.trim() ? '' : 'Species name is required.'
-  formErrors.pondSize = form.pondSize > 0 ? '' : 'Enter a size greater than 0.'
+  formErrors.species = form.species.trim() ? '' : 'Species name is required.'
+  formErrors.farmArea = form.farmArea > 0 ? '' : 'Enter an area greater than 0.'
   formErrors.budget = form.budget > 0 ? '' : 'Enter a budget greater than 0.'
 
-  return !formErrors.speciesName && !formErrors.pondSize && !formErrors.budget
+  return !formErrors.species && !formErrors.farmArea && !formErrors.budget
 }
 
 const isSubmitDisabled = computed(() => loading.value)
@@ -54,13 +57,16 @@ async function handleSubmit() {
 }
 
 function handleReset() {
-  form.speciesName = ''
-  form.cultureSystem = 'pond'
-  form.pondSize = 0
+  form.species = ''
+  form.cultureSystem = 'Pond'
+  form.farmArea = 0
+  form.stockingDensity = 0
+  form.waterSource = ''
   form.budget = 0
+  form.productionGoal = ''
 
-  formErrors.speciesName = ''
-  formErrors.pondSize = ''
+  formErrors.species = ''
+  formErrors.farmArea = ''
   formErrors.budget = ''
 
   store.clearPlan()
@@ -77,15 +83,15 @@ function handleReset() {
       </p>
 
       <div class="field">
-        <label for="speciesName">Species Name</label>
+        <label for="species">Species</label>
         <input
-          id="speciesName"
-          v-model="form.speciesName"
+          id="species"
+          v-model="form.species"
           type="text"
           placeholder="e.g. Tilapia, Milkfish, Shrimp"
-          :aria-invalid="!!formErrors.speciesName"
+          :aria-invalid="!!formErrors.species"
         />
-        <span v-if="formErrors.speciesName" class="field__error">{{ formErrors.speciesName }}</span>
+        <span v-if="formErrors.species" class="field__error">{{ formErrors.species }}</span>
       </div>
 
       <div class="field">
@@ -98,17 +104,39 @@ function handleReset() {
       </div>
 
       <div class="field">
-        <label for="pondSize">Size (m³ / m²)</label>
+        <label for="farmArea">Farm Area (m²)</label>
         <input
-          id="pondSize"
-          v-model.number="form.pondSize"
+          id="farmArea"
+          v-model.number="form.farmArea"
           type="number"
           min="0"
           step="0.1"
-          placeholder="e.g. 100"
-          :aria-invalid="!!formErrors.pondSize"
+          placeholder="e.g. 500"
+          :aria-invalid="!!formErrors.farmArea"
         />
-        <span v-if="formErrors.pondSize" class="field__error">{{ formErrors.pondSize }}</span>
+        <span v-if="formErrors.farmArea" class="field__error">{{ formErrors.farmArea }}</span>
+      </div>
+
+      <div class="field">
+        <label for="stockingDensity">Stocking Density (per m²)</label>
+        <input
+          id="stockingDensity"
+          v-model.number="form.stockingDensity"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="e.g. 5"
+        />
+      </div>
+
+      <div class="field">
+        <label for="waterSource">Water Source</label>
+        <input
+          id="waterSource"
+          v-model="form.waterSource"
+          type="text"
+          placeholder="e.g. River, Well, Municipal"
+        />
       </div>
 
       <div class="field">
@@ -123,6 +151,16 @@ function handleReset() {
           :aria-invalid="!!formErrors.budget"
         />
         <span v-if="formErrors.budget" class="field__error">{{ formErrors.budget }}</span>
+      </div>
+
+      <div class="field">
+        <label for="productionGoal">Production Goal</label>
+        <input
+          id="productionGoal"
+          v-model="form.productionGoal"
+          type="text"
+          placeholder="e.g. Food, Sale"
+        />
       </div>
 
       <div class="farm-plan__actions">

@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { useFarmDetail } from '../composables/useFarmDetail.ts'
 import FarmPlanSummary from './FarmPlanSummary.vue'
 import RecommendationChecklist from '../components/RecommendationChecklist.vue'
-import type { EquipmentResponse, FeedResponse } from '../types/farmPlan.ts'
+import type { FarmEquipment } from '../types/farmPlan.ts'
 
 const router = useRouter()
 
@@ -16,39 +16,34 @@ const props = defineProps<{
 const { farm, loading, error, notFound, getFarmDetail } = useFarmDetail()
 
 onMounted(() => {
-  getFarmDetail(Number(props.id))
+  getFarmDetail(props.id)
 })
-async function toggleFeed(feed: FeedResponse) {
-  console.log(`Update farm feed: ${feed.id}`, feed)
-}
 
-async function toggleEquipment(equipment: EquipmentResponse) {
+async function toggleEquipment(equipment: FarmEquipment) {
   console.log(`Update farm equipment: ${equipment.id}`, equipment)
 }
 </script>
 
 <template>
   <div class="detail">
-    <button type="button" class="detail__back" @click="router.back()">← Back to Farm Plans</button>
+    <button type="button" class="detail__back" @click="router.back()">← Back to Farms</button>
 
-    <p v-if="loading" class="detail__status">Loading farm plan…</p>
+    <p v-if="loading" class="detail__status">Loading farm…</p>
 
     <p v-else-if="error" class="detail__status detail__status--error" role="alert">
       {{ error }}
     </p>
 
     <p v-else-if="notFound" class="detail__status">
-      This farm plan couldn't be found. It may have been removed.
+      This farm couldn't be found. It may have been removed.
     </p>
 
     <FarmPlanSummary v-else-if="farm" :plan="farm" />
 
     <RecommendationChecklist
       v-if="farm"
-      :equipments="farm.recommendedToolsEquipments"
-      :feeds="farm.recommendedBrandOfFeeds"
+      :equipments="farm.equipments"
       @update:equipment="toggleEquipment"
-      @update:feed="toggleFeed"
     />
   </div>
 </template>

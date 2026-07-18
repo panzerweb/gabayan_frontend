@@ -11,9 +11,23 @@ const store = useFarmPlanStore()
 const { farmPlan, loading, error } = storeToRefs(store)
 
 async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
-  console.log(`Saved to Plan: ${farmPlanPayload.speciesName}`)
+  console.log(`Saved to Plan: ${farmPlanPayload.species}`)
 
   router.push('/')
+}
+
+function formatParam(param: any) {
+  if (!param) return 'N/A'
+  if (param.minimum !== undefined && param.maximum !== undefined) {
+    return `${param.minimum} - ${param.maximum} ${param.unit || ''}`
+  }
+  if (param.minimum !== undefined) {
+    return `Min ${param.minimum} ${param.unit || ''}`
+  }
+  if (param.maximum !== undefined) {
+    return `Max ${param.maximum} ${param.unit || ''}`
+  }
+  return 'N/A'
 }
 </script>
 
@@ -32,18 +46,12 @@ async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
     <template v-else>
       <header class="result__header">
         <p class="result__eyebrow">Recommended Setup</p>
-        <h3 class="result__species">{{ farmPlan.speciesName }}</h3>
+        <h3 class="result__species">{{ farmPlan.species }}</h3>
 
         <div class="result__stats">
           <div class="stat">
-            <span class="stat__value">{{
-              farmPlan.recommendedStockingDensity.toLocaleString()
-            }}</span>
-            <span class="stat__label">Stocking Density</span>
-          </div>
-          <div class="stat">
-            <span class="stat__value">{{ farmPlan.estimatedHarvestDays }}</span>
-            <span class="stat__label">Days to Harvest</span>
+            <span class="stat__value">{{ farmPlan.riskAssessment?.overallRisk || 'N/A' }}</span>
+            <span class="stat__label">Overall Risk</span>
           </div>
         </div>
       </header>
@@ -51,66 +59,82 @@ async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
       <section class="result__section">
         <h4>Water Parameters</h4>
         <dl class="water-grid">
-          <div class="water-grid__row">
+          <div class="water-grid__row" v-if="farmPlan.waterParameters?.temperature">
+            <dt>Temperature</dt>
+            <dd>{{ formatParam(farmPlan.waterParameters.temperature) }}</dd>
+          </div>
+          <div class="water-grid__row" v-if="farmPlan.waterParameters?.salinity">
             <dt>Salinity</dt>
-            <dd>{{ farmPlan.recommendedWaterParameters.salinity }}</dd>
+            <dd>{{ formatParam(farmPlan.waterParameters.salinity) }}</dd>
           </div>
-          <div class="water-grid__row">
+          <div class="water-grid__row" v-if="farmPlan.waterParameters?.ph">
             <dt>pH</dt>
-            <dd>{{ farmPlan.recommendedWaterParameters.ph }}</dd>
+            <dd>{{ formatParam(farmPlan.waterParameters.ph) }}</dd>
           </div>
-          <div class="water-grid__row">
-            <dt>Ammonia</dt>
-            <dd>{{ farmPlan.recommendedWaterParameters.ammonia }}</dd>
-          </div>
-          <div class="water-grid__row">
-            <dt>Nitrite</dt>
-            <dd>{{ farmPlan.recommendedWaterParameters.nitrite }}</dd>
-          </div>
-          <div class="water-grid__row">
+          <div class="water-grid__row" v-if="farmPlan.waterParameters?.dissolvedOxygen">
             <dt>Dissolved Oxygen</dt>
-            <dd>{{ farmPlan.recommendedWaterParameters.dissolvedOxygen }}</dd>
+            <dd>{{ formatParam(farmPlan.waterParameters.dissolvedOxygen) }}</dd>
           </div>
-          <div class="water-grid__row">
-            <dt>Water Temperature</dt>
-            <dd>{{ farmPlan.recommendedWaterParameters.waterTemperature }}</dd>
+          <div class="water-grid__row" v-if="farmPlan.waterParameters?.ammonia">
+            <dt>Ammonia</dt>
+            <dd>{{ formatParam(farmPlan.waterParameters.ammonia) }}</dd>
           </div>
         </dl>
       </section>
 
       <section class="result__section">
-        <h4>Recommended Equipment</h4>
-        <ul class="card-list">
-          <li
-            v-for="equipment in farmPlan.recommendedToolsEquipments"
-            :key="equipment.id"
-            class="card"
-          >
-            <h5>{{ equipment.equipmentName }}</h5>
-            <p>{{ equipment.equipmentDescription }}</p>
-            <a
-              class="card__link"
-              :href="`https://www.google.com/maps?q=${equipment.latitude},${equipment.longitude}`"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {{ equipment.storeName }}
-            </a>
+        <h4>Farm Preparation</h4>
+        <ol class="prep-list">
+          <li v-for="step in farmPlan.farmPreparation" :key="step.step">
+            <strong>{{ step.title }}:</strong> {{ step.description }}
           </li>
-        </ul>
+        </ol>
       </section>
 
       <section class="result__section">
-        <h4>Recommended Feeds</h4>
+        <h4>Management Routine</h4>
+        <div class="management-grid">
+          <div class="management-item" v-if="farmPlan.management?.feeding">
+            <h5>Feeding</h5>
+            <p><strong>Frequency:</strong> {{ farmPlan.management.feeding.frequency }}</p>
+            <p><strong>Type:</strong> {{ farmPlan.management.feeding.feedType }}</p>
+          </div>
+          <div class="management-item" v-if="farmPlan.management?.waterChange">
+            <h5>Water Change</h5>
+            <p><strong>Frequency:</strong> {{ farmPlan.management.waterChange.frequency }}</p>
+          </div>
+          <div class="management-item" v-if="farmPlan.management?.dailyMonitoring">
+            <h5>Daily Monitoring</h5>
+            <ul>
+              <li v-for="task in farmPlan.management.dailyMonitoring" :key="task">{{ task }}</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="result__section">
+        <h4>Recommended Equipment</h4>
         <ul class="card-list">
-          <li v-for="feed in farmPlan.recommendedBrandOfFeeds" :key="feed.id" class="card">
-            <h5>{{ feed.feedsName }}</h5>
-            <p>{{ feed.feedsDescription }}</p>
+          <li v-for="equipment in farmPlan.equipment" :key="equipment.id" class="card">
+            <h5>{{ equipment.name }}</h5>
+            <p>{{ equipment.purpose }}</p>
+            <span class="badge">{{ equipment.importance }} Importance</span>
           </li>
         </ul>
       </section>
 
-      <section class="save_btn_wrapper flex justify-center items-center">
+      <section class="result__section" v-if="farmPlan.diseases?.length">
+        <h4>Disease Risks</h4>
+        <ul class="card-list">
+          <li v-for="disease in farmPlan.diseases" :key="disease.name" class="card card--warning">
+            <h5>{{ disease.name }}</h5>
+            <p><strong>Symptoms:</strong> {{ disease.symptoms.join(', ') }}</p>
+            <p><strong>Prevention:</strong> {{ disease.prevention.join(', ') }}</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="save_btn_wrapper flex justify-center items-center mt-6">
         <AppButton label="Save Farm Plan" v-on:on-submit="handleSaveFarmPlan(farmPlan)" />
       </section>
     </template>
@@ -172,6 +196,7 @@ async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
 .stat__value {
   font-size: 1.5rem;
   font-weight: 700;
+  text-transform: capitalize;
 }
 
 .stat__label {
@@ -214,6 +239,44 @@ async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
   font-size: 0.85rem;
 }
 
+.prep-list {
+  padding-left: 1.25rem;
+  margin: 0;
+  color: #334155;
+  font-size: 0.9rem;
+}
+.prep-list li {
+  margin-bottom: 0.5rem;
+}
+
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.management-item {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+.management-item h5 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+.management-item p {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  color: #475569;
+}
+.management-item ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
 .card-list {
   list-style: none;
   margin: 0;
@@ -229,6 +292,10 @@ async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
   padding: 0.85rem 1rem;
   background: #f8fafc;
 }
+.card--warning {
+  border-color: #fcd34d;
+  background: #fffbeb;
+}
 
 .card h5 {
   margin: 0 0 0.35rem;
@@ -243,14 +310,13 @@ async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
   line-height: 1.4;
 }
 
-.card__link {
-  font-size: 0.8rem;
-  color: #0891b2;
-  text-decoration: none;
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
   font-weight: 600;
-}
-
-.card__link:hover {
-  text-decoration: underline;
 }
 </style>

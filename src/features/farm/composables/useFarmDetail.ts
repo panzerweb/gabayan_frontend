@@ -15,7 +15,7 @@ export function useFarmDetail() {
   // message instead of a generic error state.
   const notFound = ref(false)
 
-  async function getFarmDetail(id: number) {
+  async function getFarmDetail(id: string) {
     loading.value = true
     error.value = null
     notFound.value = false

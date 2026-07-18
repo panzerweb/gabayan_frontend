@@ -2,7 +2,7 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import type { FarmPlanResponse } from '../types/farmPlan'
+import type { FarmResponse } from '../types/farmPlan'
 import { useFarm } from '../composables/useFarm'
 
 const { farms, isLoading, getFarms } = useFarm()
@@ -12,7 +12,7 @@ onMounted(() => {
   getFarms()
 })
 
-function goToDetail(plan: FarmPlanResponse) {
+function goToDetail(plan: FarmResponse) {
   // NOTE: adjust the route name/param below to match your router config.
   router.push({
     name: 'farm-detail',
@@ -26,18 +26,18 @@ function goToDetail(plan: FarmPlanResponse) {
 <template>
   <div class="list">
     <header class="list__header">
-      <h2>Farm Plans</h2>
-      <p>Every plan you've generated, in one place.</p>
+      <h2>Farms</h2>
+      <p>Every farm you've saved, in one place.</p>
     </header>
 
-    <p v-if="isLoading" class="list__status">Loading farm plans…</p>
+    <p v-if="isLoading" class="list__status">Loading farms…</p>
 
     <!-- <p v-else-if="error" class="list__status list__status--error" role="alert">
       {{ error }}
     </p> -->
 
     <p v-else-if="!farms?.length" class="list__status">
-      No farm plans yet. Generate one to see it here.
+      No farms yet. Save one to see it here.
     </p>
 
     <ul v-else class="plan-list">
@@ -51,10 +51,10 @@ function goToDetail(plan: FarmPlanResponse) {
         @keydown.enter="goToDetail(farm)"
       >
         <div class="plan-card__main">
-          <h3>{{ farm.speciesName }}</h3>
+          <h3>{{ farm.species }}</h3>
           <p class="plan-card__meta">
-            {{ farm.recommendedStockingDensity.toLocaleString() }} stocking density ·
-            {{ farm.estimatedHarvestDays }} days to harvest
+            {{ farm.culture_system || 'Unknown System' }} ·
+            {{ farm.equipments?.length || 0 }} Equipments
           </p>
         </div>
       </li>

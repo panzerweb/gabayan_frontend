@@ -1,12 +1,13 @@
 import type { RouteRecordRaw } from 'vue-router'
 import DashboardView from './views/DashboardView.vue'
 
-export const authRoutes: RouteRecordRaw[] = [
+export const dashboardRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Dashboard',
     component: DashboardView,
+    meta: { requiresAuth: true }
   },
 ]
 
-export default authRoutes
+export default dashboardRoutes
