@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useFarmDetail } from '../composables/useFarmDetail.ts'
-import FarmPlanSummary from './FarmPlanSummary.vue'
+import FarmSummary from './FarmSummary.vue'
 import RecommendationChecklist from '../components/RecommendationChecklist.vue'
 import type { FarmEquipment } from '../types/farmPlan.ts'
 

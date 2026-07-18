@@ -2,19 +2,33 @@
 import AppButton from '@/components/buttons/AppButton.vue'
 import { useFarmPlanStore } from '@/stores/farmPlanStore'
 import { storeToRefs } from 'pinia'
-import type { FarmPlanResponse } from '../types/farmPlan'
+import type { FarmPlanPayload } from '../types/farmPlan'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+import { useFarmPlan } from '../composables/useFarmPlan'
 
 const router = useRouter()
 
 const store = useFarmPlanStore()
 const { farmPlan, loading, error } = storeToRefs(store)
+const {saveFarmPlan} = useFarmPlan();
 
-async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
-  console.log(`Saved to Plan: ${farmPlanPayload.species}`)
+async function handleSaveFarmPlan(farmPlanPayload: FarmPlanPayload) {
+  console.log(`Saved to Plan: ${farmPlanPayload.request_inputs.species}`)
 
-  router.push('/')
+  const result = await saveFarmPlan(farmPlanPayload);
+
+  if (!result) {
+    return;
+  }
+  else{
+    router.push('/')
+  }
 }
+
+onMounted(() => {
+  console.log(farmPlan);
+})
 
 function formatParam(param: any) {
   if (!param) return 'N/A'
@@ -46,11 +60,11 @@ function formatParam(param: any) {
     <template v-else>
       <header class="result__header">
         <p class="result__eyebrow">Recommended Setup</p>
-        <h3 class="result__species">{{ farmPlan.species }}</h3>
+        <h3 class="result__species">{{ farmPlan.request_inputs.species }}</h3>
 
         <div class="result__stats">
           <div class="stat">
-            <span class="stat__value">{{ farmPlan.riskAssessment?.overallRisk || 'N/A' }}</span>
+            <span class="stat__value">{{ farmPlan.plan_data.riskAssessment?.overallRisk || 'N/A' }}</span>
             <span class="stat__label">Overall Risk</span>
           </div>
         </div>
@@ -59,25 +73,25 @@ function formatParam(param: any) {
       <section class="result__section">
         <h4>Water Parameters</h4>
         <dl class="water-grid">
-          <div class="water-grid__row" v-if="farmPlan.waterParameters?.temperature">
+          <div class="water-grid__row" v-if="farmPlan.plan_data.waterParameters?.temperature">
             <dt>Temperature</dt>
-            <dd>{{ formatParam(farmPlan.waterParameters.temperature) }}</dd>
+            <dd>{{ formatParam(farmPlan.plan_data.waterParameters.temperature) }}</dd>
           </div>
-          <div class="water-grid__row" v-if="farmPlan.waterParameters?.salinity">
+          <div class="water-grid__row" v-if="farmPlan.plan_data.waterParameters?.salinity">
             <dt>Salinity</dt>
-            <dd>{{ formatParam(farmPlan.waterParameters.salinity) }}</dd>
+            <dd>{{ formatParam(farmPlan.plan_data.waterParameters.salinity) }}</dd>
           </div>
-          <div class="water-grid__row" v-if="farmPlan.waterParameters?.ph">
+          <div class="water-grid__row" v-if="farmPlan.plan_data.waterParameters?.ph">
             <dt>pH</dt>
-            <dd>{{ formatParam(farmPlan.waterParameters.ph) }}</dd>
+            <dd>{{ formatParam(farmPlan.plan_data.waterParameters.ph) }}</dd>
           </div>
-          <div class="water-grid__row" v-if="farmPlan.waterParameters?.dissolvedOxygen">
+          <div class="water-grid__row" v-if="farmPlan.plan_data.waterParameters?.dissolvedOxygen">
             <dt>Dissolved Oxygen</dt>
-            <dd>{{ formatParam(farmPlan.waterParameters.dissolvedOxygen) }}</dd>
+            <dd>{{ formatParam(farmPlan.plan_data.waterParameters.dissolvedOxygen) }}</dd>
           </div>
-          <div class="water-grid__row" v-if="farmPlan.waterParameters?.ammonia">
+          <div class="water-grid__row" v-if="farmPlan.plan_data.waterParameters?.ammonia">
             <dt>Ammonia</dt>
-            <dd>{{ formatParam(farmPlan.waterParameters.ammonia) }}</dd>
+            <dd>{{ formatParam(farmPlan.plan_data.waterParameters.ammonia) }}</dd>
           </div>
         </dl>
       </section>
@@ -85,7 +99,7 @@ function formatParam(param: any) {
       <section class="result__section">
         <h4>Farm Preparation</h4>
         <ol class="prep-list">
-          <li v-for="step in farmPlan.farmPreparation" :key="step.step">
+          <li v-for="step in farmPlan.plan_data.farmPreparation" :key="step.step">
             <strong>{{ step.title }}:</strong> {{ step.description }}
           </li>
         </ol>
@@ -94,19 +108,19 @@ function formatParam(param: any) {
       <section class="result__section">
         <h4>Management Routine</h4>
         <div class="management-grid">
-          <div class="management-item" v-if="farmPlan.management?.feeding">
+          <div class="management-item" v-if="farmPlan.plan_data.management?.feeding">
             <h5>Feeding</h5>
-            <p><strong>Frequency:</strong> {{ farmPlan.management.feeding.frequency }}</p>
-            <p><strong>Type:</strong> {{ farmPlan.management.feeding.feedType }}</p>
+            <p><strong>Frequency:</strong> {{ farmPlan.plan_data.management.feeding.frequency }}</p>
+            <p><strong>Type:</strong> {{ farmPlan.plan_data.management.feeding.feedType }}</p>
           </div>
-          <div class="management-item" v-if="farmPlan.management?.waterChange">
+          <div class="management-item" v-if="farmPlan.plan_data.management?.waterChange">
             <h5>Water Change</h5>
-            <p><strong>Frequency:</strong> {{ farmPlan.management.waterChange.frequency }}</p>
+            <p><strong>Frequency:</strong> {{ farmPlan.plan_data.management.waterChange.frequency }}</p>
           </div>
-          <div class="management-item" v-if="farmPlan.management?.dailyMonitoring">
+          <div class="management-item" v-if="farmPlan.plan_data.management?.dailyMonitoring">
             <h5>Daily Monitoring</h5>
             <ul>
-              <li v-for="task in farmPlan.management.dailyMonitoring" :key="task">{{ task }}</li>
+              <li v-for="task in farmPlan.plan_data.management.dailyMonitoring" :key="task">{{ task }}</li>
             </ul>
           </div>
         </div>
@@ -115,7 +129,7 @@ function formatParam(param: any) {
       <section class="result__section">
         <h4>Recommended Equipment</h4>
         <ul class="card-list">
-          <li v-for="equipment in farmPlan.equipment" :key="equipment.id" class="card">
+          <li v-for="equipment in farmPlan.plan_data.equipment" :key="equipment.id" class="card">
             <h5>{{ equipment.name }}</h5>
             <p>{{ equipment.purpose }}</p>
             <span class="badge">{{ equipment.importance }} Importance</span>
@@ -123,10 +137,10 @@ function formatParam(param: any) {
         </ul>
       </section>
 
-      <section class="result__section" v-if="farmPlan.diseases?.length">
+      <section class="result__section" v-if="farmPlan.plan_data.diseases?.length">
         <h4>Disease Risks</h4>
         <ul class="card-list">
-          <li v-for="disease in farmPlan.diseases" :key="disease.name" class="card card--warning">
+          <li v-for="disease in farmPlan.plan_data.diseases" :key="disease.name" class="card card--warning">
             <h5>{{ disease.name }}</h5>
             <p><strong>Symptoms:</strong> {{ disease.symptoms.join(', ') }}</p>
             <p><strong>Prevention:</strong> {{ disease.prevention.join(', ') }}</p>
