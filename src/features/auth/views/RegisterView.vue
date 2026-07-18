@@ -6,7 +6,9 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const name = ref('')
+const first_name = ref('')
+const last_name = ref('')
+const birthdate = ref('')
 const email = ref('')
 const password = ref('')
 const password_confirmation = ref('')
@@ -18,7 +20,9 @@ const handleRegister = async () => {
   }
 
   const success = await authStore.register({
-    name: name.value,
+    first_name: first_name.value,
+    last_name: last_name.value,
+    birthdate: birthdate.value,
     email: email.value,
     password: password.value,
     password_confirmation: password_confirmation.value
@@ -40,17 +44,48 @@ const handleRegister = async () => {
       
       <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
         <div class="space-y-4">
+          <div class="flex space-x-4">
+            <div class="w-1/2">
+              <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+              <div class="mt-1">
+                <input
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  required
+                  v-model="first_name"
+                  class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Juan"
+                />
+              </div>
+            </div>
+
+            <div class="w-1/2">
+              <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+              <div class="mt-1">
+                <input
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  required
+                  v-model="last_name"
+                  class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Dela Cruz"
+                />
+              </div>
+            </div>
+          </div>
+
           <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
             <div class="mt-1">
               <input
-                id="name"
-                name="name"
-                type="text"
+                id="birthdate"
+                name="birthdate"
+                type="date"
                 required
-                v-model="name"
+                v-model="birthdate"
                 class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Juan Dela Cruz"
               />
             </div>
           </div>
