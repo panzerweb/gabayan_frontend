@@ -1,11 +1,26 @@
+export type CultureSystem = 'pond' | 'cage' | 'tank';
+export type FishSpecies = 'tilapia' | 'bangus' | 'hito' | 'lapu-lapu' | 'pasayan'
+export type feedPreferences = 'Commercial Pellets' | 'Wild Pellets'
+export type powerInfrastructure = 'Grid' | 'Solar'
+export type laborAvailability = 'Solo / Family' | 'Hired Help'
+
 export interface FarmPlanRequest {
-  species: string
-  cultureSystem: string
+  species: FishSpecies
+  cultureSystem: CultureSystem
   farmArea: number
   stockingDensity: number
   waterSource: string
   budget: number
   productionGoal: string
+  targetCycleDuration: number,
+  feedPreference: feedPreferences,
+  averageTemperature: number,
+  targetHarvestWeightGrams: number,
+  initialStockingWeightGrams: number,
+  feedCostPerKg: number,
+  powerInfrastructure: powerInfrastructure,
+  targetSellingPrice: number,
+  laborAvailability: laborAvailability
 }
 
 export interface WaterParameter {
@@ -64,7 +79,6 @@ export interface RiskAssessment {
 }
 
 export interface FarmPlanResponse {
-  id?: number
   species: string
   waterParameters: WaterParameters
   farmPreparation: FarmPreparation[]
@@ -73,6 +87,21 @@ export interface FarmPlanResponse {
   compatibleSpecies: CompatibleSpecies[]
   diseases: Disease[]
   riskAssessment: RiskAssessment
+  financialProjections: FinancialProjections
+}
+
+export interface FinancialProjections {
+  estimatedFCR: number,
+  estimatedSurvivalRate: number,
+  estimatedTotalFeedCost: number,
+  projectedRevenue: number,
+  netProfit: number,
+  estimatedROI: number
+}
+
+export interface FarmPlanPayload {
+  request_inputs: FarmPlanRequest
+  plan_data: FarmPlanResponse
 }
 
 export interface FarmPlanAPIResponse {

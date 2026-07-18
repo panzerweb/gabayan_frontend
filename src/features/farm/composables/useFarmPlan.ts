@@ -1,13 +1,32 @@
 import { ref } from 'vue'
-import { generateFarmPlan } from '../services/farmPlanService'
-import type { FarmPlanRequest, FarmPlanResponse } from '../types/farmPlan'
+import { generateFarmPlan, saveFarmPlanEndpoint } from '../services/farmPlanService'
+import type { FarmPlanPayload, FarmPlanRequest, FarmPlanResponse } from '../types/farmPlan'
 
 export function useFarmPlan() {
   const loading = ref(false)
 
-  const farmPlan = ref<FarmPlanResponse | null>(null)
+  const farmPlan = ref<FarmPlanPayload | null>(null)
 
-  async function createPlan(payload: FarmPlanRequest): Promise<FarmPlanResponse> {
+  async function saveFarmPlan(payload: FarmPlanPayload): Promise<boolean> {
+    loading.value = true;
+
+    try {
+      const result = await saveFarmPlanEndpoint(payload);
+
+      if (result) {
+        return true;
+      }
+
+      throw Error("Can't save farm plan!")
+    } catch (error) {
+      console.log(error);
+      return false;
+    }finally {
+      loading.value = false
+    }
+  }
+
+  async function createPlan(payload: FarmPlanRequest): Promise<FarmPlanPayload> {
     loading.value = true
 
     try {
@@ -23,5 +42,6 @@ export function useFarmPlan() {
     loading,
     farmPlan,
     createPlan,
+    saveFarmPlan,
   }
 }

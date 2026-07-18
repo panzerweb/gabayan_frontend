@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useFarmDetail } from '../composables/useFarmDetail.ts'
-import FarmPlanSummary from './FarmPlanSummary.vue'
+import FarmSummary from './FarmSummary.vue'
 import RecommendationChecklist from '../components/RecommendationChecklist.vue'
 import type { FarmEquipment } from '../types/farmPlan.ts'
 
@@ -38,7 +38,7 @@ async function toggleEquipment(equipment: FarmEquipment) {
       This farm couldn't be found. It may have been removed.
     </p>
 
-    <FarmPlanSummary v-else-if="farm" :plan="farm" />
+    <FarmSummary v-else-if="farm" :plan="farm" />
 
     <RecommendationChecklist
       v-if="farm"

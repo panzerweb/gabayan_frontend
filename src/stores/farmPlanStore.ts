@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import type { FarmPlanRequest, FarmPlanResponse } from '@/features/farm/types/farmPlan'
+import type { FarmPlanPayload, FarmPlanRequest, FarmPlanResponse } from '@/features/farm/types/farmPlan'
 
 import { useFarmPlan } from '@/features/farm/composables/useFarmPlan'
 
 export const useFarmPlanStore = defineStore('farmPlan', () => {
   const request = ref<FarmPlanRequest | null>(null)
 
-  const farmPlan = ref<FarmPlanResponse | null>(null)
+  const farmPlan = ref<FarmPlanPayload | null>(null)
 
   const loading = ref(false)
 
@@ -24,6 +24,7 @@ export const useFarmPlanStore = defineStore('farmPlan', () => {
       const { createPlan } = useFarmPlan()
 
       const result = await createPlan(payload)
+      console.log(`Result: ${result}`)
 
       farmPlan.value = result
     } catch (err: unknown) {
