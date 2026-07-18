@@ -154,4 +154,11 @@ export interface FarmResponse {
   tasks: FarmTask[]
   water_targets: FarmWaterTarget[]
   equipments: FarmEquipment[]
+  diseases?: Disease[]
+  compatible_species?: CompatibleSpecies[]
+  financial_projections?: FinancialProjections
+  risk_assessment?: RiskAssessment
+  recommendation?: string
+  plan_data?: FarmPlanResponse
 }
+
