@@ -20,20 +20,21 @@ defineProps<{
       </div>
     </header>
 
-    <section class="summary__section" v-if="plan.tasks?.length">
+    <section class="summary__section">
       <h4>Tasks</h4>
-      <ul class="task-list">
+      <ul class="task-list" v-if="plan.tasks?.length">
         <li v-for="task in plan.tasks" :key="task.id" class="task-item">
           <strong>{{ task.title }}</strong>
           <span v-if="task.status" class="badge">{{ task.status }}</span>
           <p v-if="task.description">{{ task.description }}</p>
         </li>
       </ul>
+      <p v-else class="empty-state">No tasks available.</p>
     </section>
 
-    <section class="summary__section" v-if="plan.water_targets?.length">
+    <section class="summary__section">
       <h4>Water Targets</h4>
-      <div class="table-container">
+      <div class="table-container" v-if="plan.water_targets?.length">
         <table class="data-table">
           <thead>
             <tr>
@@ -53,17 +54,7 @@ defineProps<{
           </tbody>
         </table>
       </div>
-    </section>
-
-    <section class="summary__section" v-if="plan.equipments?.length">
-      <h4>Equipments</h4>
-      <ul class="card-list">
-        <li v-for="equipment in plan.equipments" :key="equipment.id" class="card">
-          <h5>{{ equipment.name }}</h5>
-          <p v-if="equipment.purpose">{{ equipment.purpose }}</p>
-          <span v-if="equipment.importance" class="badge">{{ equipment.importance }} Importance</span>
-        </li>
-      </ul>
+      <p v-else class="empty-state">No water targets available.</p>
     </section>
   </div>
 </template>
@@ -180,43 +171,10 @@ defineProps<{
   border-bottom: none;
 }
 
-.card-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-}
-
-.card {
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.85rem 1rem;
-  background: #f8fafc;
-}
-
-.card h5 {
-  margin: 0 0 0.35rem;
-  font-size: 0.95rem;
-  color: #0f172a;
-}
-
-.card p {
-  margin: 0 0 0.5rem;
-  font-size: 0.8rem;
-  color: #475569;
-  line-height: 1.4;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
-  background: #e2e8f0;
-  color: #334155;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-  font-weight: 600;
-  margin-left: 0.5rem;
+.empty-state {
+  color: #64748b;
+  font-style: italic;
+  font-size: 0.9rem;
+  padding: 1rem 0;
 }
 </style>

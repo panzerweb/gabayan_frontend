@@ -15,11 +15,6 @@ const navItems = [
     route: '/farms',
   },
   {
-    name: 'Map',
-    icon: '🗺',
-    route: '/map',
-  },
-  {
     name: 'Profile',
     icon: '👤',
     route: '/profile',
