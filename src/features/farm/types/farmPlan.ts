@@ -1,19 +1,110 @@
+/*
+|--------------------------------------------------------------------------
+| POST /farm-plan
+|--------------------------------------------------------------------------
+*/
+export type CultureSystem = 'pond' | 'fish_cage' | 'tank'
+
 export interface FarmPlanRequest {
-  speciesId: number
+  speciesName: string
+  cultureSystem: CultureSystem
   pondSize: number
-  waterType: string
   budget: number
 }
 
+/*
+|--------------------------------------------------------------------------
+| Farm Plan Response
+|--------------------------------------------------------------------------
+*/
+
 export interface FarmPlanResponse {
-  species: string
+  id: number
+  speciesName: string
   recommendedStockingDensity: number
   estimatedHarvestDays: number
-  recommendedFeeds: string[]
-  equipment: string[]
-  waterParameters: {
-    ph: string
-    temperature: string
-    oxygen: string
-  }
+
+  recommendedToolsEquipments: EquipmentRecommendation[]
+
+  recommendedBrandOfFeeds: FeedRecommendation[]
+
+  recommendedWaterParameters: WaterParameters
+}
+
+/*
+|--------------------------------------------------------------------------
+| Equipment
+|--------------------------------------------------------------------------
+*/
+
+export interface EquipmentRecommendation {
+  id: number
+  equipmentName: string
+  equipmentDescription: string
+
+  storeName: string
+  latitude: number
+  longitude: number
+}
+
+/*
+|--------------------------------------------------------------------------
+| Feed Recommendation
+|--------------------------------------------------------------------------
+*/
+
+export interface FeedRecommendation {
+  id: number
+  feedsName: string
+  feedsDescription: string
+}
+
+/*
+|--------------------------------------------------------------------------
+| Water Parameters
+|--------------------------------------------------------------------------
+*/
+
+export interface WaterParameters {
+  salinity: string
+  ph: string
+  ammonia: string
+  nitrite: string
+  dissolvedOxygen: string
+  waterTemperature: string
+}
+
+/*
+  Actual Farm Response interfaces alongside with
+*/
+export interface FarmResponse {
+  id: number
+  speciesName: string
+  recommendedStockingDensity: number
+  estimatedHarvestDays: number
+
+  recommendedToolsEquipments: EquipmentResponse[]
+
+  recommendedBrandOfFeeds: FeedResponse[]
+
+  recommendedWaterParameters: WaterParameters
+}
+
+export interface EquipmentResponse {
+  id: number
+  equipmentName: string
+  equipmentDescription: string
+
+  storeName: string
+  latitude: number
+  longitude: number
+
+  isBought: boolean
+}
+
+export interface FeedResponse {
+  id: number
+  feedsName: string
+  feedsDescription: string
+  isBought: boolean
 }

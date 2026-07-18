@@ -1,170 +1,256 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
-
+import AppButton from '@/components/buttons/AppButton.vue'
 import { useFarmPlanStore } from '@/stores/farmPlanStore'
+import { storeToRefs } from 'pinia'
+import type { FarmPlanResponse } from '../types/farmPlan'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const store = useFarmPlanStore()
+const { farmPlan, loading, error } = storeToRefs(store)
 
-const { farmPlan } = storeToRefs(store)
+async function handleSaveFarmPlan(farmPlanPayload: FarmPlanResponse) {
+  console.log(`Saved to Plan: ${farmPlanPayload.speciesName}`)
 
-const activeTab = ref('overview')
-
-const tabs = [
-  {
-    id: 'overview',
-    label: 'Overview',
-  },
-  {
-    id: 'water',
-    label: 'Water Parameters',
-  },
-  {
-    id: 'feeds',
-    label: 'Recommended Feeds',
-  },
-  {
-    id: 'equipment',
-    label: 'Equipment',
-  },
-]
+  router.push('/')
+}
 </script>
 
 <template>
-  <div class="min-h-screen w-full overflow-x-hidden bg-slate-50 p-4 sm:p-8">
-    <div v-if="farmPlan" class="mx-auto w-full max-w-5xl">
-      <!-- Header -->
+  <div class="result">
+    <p v-if="loading" class="result__status">Generating your farm plan…</p>
 
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-slate-800">AI Farm Plan</h1>
+    <p v-else-if="error" class="result__status result__status--error" role="alert">
+      {{ error }}
+    </p>
 
-        <p class="mt-2 text-slate-500">
-          Generated recommendation for
-          <span class="font-medium text-slate-700">
-            {{ farmPlan.species }}
-          </span>
-        </p>
-      </div>
+    <p v-else-if="!farmPlan" class="result__status">
+      No farm plan yet. Go back and fill out the form to generate one.
+    </p>
 
-      <!-- Tabs -->
+    <template v-else>
+      <header class="result__header">
+        <p class="result__eyebrow">Recommended Setup</p>
+        <h3 class="result__species">{{ farmPlan.speciesName }}</h3>
 
-      <div class="mb-6 flex gap-2 overflow-x-auto rounded-xl border border-slate-200 bg-white p-2">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          @click="activeTab = tab.id"
-          class="shrink-0 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition"
-          :class="
-            activeTab === tab.id ? 'bg-teal-600 text-white' : 'text-slate-600 hover:bg-slate-100'
-          "
-        >
-          {{ tab.label }}
-        </button>
-      </div>
-
-      <!-- Content -->
-
-      <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:p-6">
-        <!-- Overview -->
-
-        <div v-if="activeTab === 'overview'" class="space-y-5">
-          <h2 class="text-xl font-semibold text-slate-800">Farm Overview</h2>
-
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm text-slate-500">Species</p>
-
-              <h3 class="mt-2 text-lg font-semibold text-slate-800">🐟 {{ farmPlan.species }}</h3>
-            </div>
-
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm text-slate-500">Stocking Density</p>
-
-              <h3 class="mt-2 text-lg font-semibold text-slate-800">
-                {{ farmPlan.recommendedStockingDensity }}
-              </h3>
-            </div>
-
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm text-slate-500">Harvest Time</p>
-
-              <h3 class="mt-2 text-lg font-semibold text-slate-800">
-                {{ farmPlan.estimatedHarvestDays }} days
-              </h3>
-            </div>
+        <div class="result__stats">
+          <div class="stat">
+            <span class="stat__value">{{
+              farmPlan.recommendedStockingDensity.toLocaleString()
+            }}</span>
+            <span class="stat__label">Stocking Density</span>
+          </div>
+          <div class="stat">
+            <span class="stat__value">{{ farmPlan.estimatedHarvestDays }}</span>
+            <span class="stat__label">Days to Harvest</span>
           </div>
         </div>
+      </header>
 
-        <!-- Water Parameters -->
-
-        <div v-if="activeTab === 'water'" class="space-y-5">
-          <h2 class="text-xl font-semibold text-slate-800">Water Parameters</h2>
-
-          <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm text-slate-500">pH</p>
-
-              <h3 class="mt-2 text-lg font-semibold">
-                {{ farmPlan.waterParameters.ph }}
-              </h3>
-            </div>
-
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm text-slate-500">Temperature</p>
-
-              <h3 class="mt-2 text-lg font-semibold">
-                {{ farmPlan.waterParameters.temperature }}
-              </h3>
-            </div>
-
-            <div class="rounded-xl border border-slate-200 bg-slate-50 p-5">
-              <p class="text-sm text-slate-500">Oxygen</p>
-
-              <h3 class="mt-2 text-lg font-semibold">
-                {{ farmPlan.waterParameters.oxygen }}
-              </h3>
-            </div>
+      <section class="result__section">
+        <h4>Water Parameters</h4>
+        <dl class="water-grid">
+          <div class="water-grid__row">
+            <dt>Salinity</dt>
+            <dd>{{ farmPlan.recommendedWaterParameters.salinity }}</dd>
           </div>
-        </div>
+          <div class="water-grid__row">
+            <dt>pH</dt>
+            <dd>{{ farmPlan.recommendedWaterParameters.ph }}</dd>
+          </div>
+          <div class="water-grid__row">
+            <dt>Ammonia</dt>
+            <dd>{{ farmPlan.recommendedWaterParameters.ammonia }}</dd>
+          </div>
+          <div class="water-grid__row">
+            <dt>Nitrite</dt>
+            <dd>{{ farmPlan.recommendedWaterParameters.nitrite }}</dd>
+          </div>
+          <div class="water-grid__row">
+            <dt>Dissolved Oxygen</dt>
+            <dd>{{ farmPlan.recommendedWaterParameters.dissolvedOxygen }}</dd>
+          </div>
+          <div class="water-grid__row">
+            <dt>Water Temperature</dt>
+            <dd>{{ farmPlan.recommendedWaterParameters.waterTemperature }}</dd>
+          </div>
+        </dl>
+      </section>
 
-        <!-- Feeds -->
-
-        <div v-if="activeTab === 'feeds'" class="space-y-5">
-          <h2 class="text-xl font-semibold text-slate-800">Recommended Feeds</h2>
-
-          <div class="space-y-3">
-            <div
-              v-for="feed in farmPlan.recommendedFeeds"
-              :key="feed"
-              class="wrap-break-word rounded-xl border border-slate-200 bg-slate-50 p-4"
+      <section class="result__section">
+        <h4>Recommended Equipment</h4>
+        <ul class="card-list">
+          <li
+            v-for="equipment in farmPlan.recommendedToolsEquipments"
+            :key="equipment.id"
+            class="card"
+          >
+            <h5>{{ equipment.equipmentName }}</h5>
+            <p>{{ equipment.equipmentDescription }}</p>
+            <a
+              class="card__link"
+              :href="`https://www.google.com/maps?q=${equipment.latitude},${equipment.longitude}`"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {{ feed }}
-            </div>
-          </div>
-        </div>
+              {{ equipment.storeName }}
+            </a>
+          </li>
+        </ul>
+      </section>
 
-        <!-- Equipment -->
+      <section class="result__section">
+        <h4>Recommended Feeds</h4>
+        <ul class="card-list">
+          <li v-for="feed in farmPlan.recommendedBrandOfFeeds" :key="feed.id" class="card">
+            <h5>{{ feed.feedsName }}</h5>
+            <p>{{ feed.feedsDescription }}</p>
+          </li>
+        </ul>
+      </section>
 
-        <div v-if="activeTab === 'equipment'" class="space-y-5">
-          <h2 class="text-xl font-semibold text-slate-800">Equipment</h2>
-
-          <div class="flex flex-wrap gap-3">
-            <span
-              v-for="item in farmPlan.equipment"
-              :key="item"
-              class="rounded-full bg-teal-100 px-4 py-2 text-sm font-medium text-teal-700"
-            >
-              {{ item }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-
-    <div v-else class="flex min-h-75 items-center justify-center text-slate-500">
-      No generated farm plan.
-    </div>
+      <section class="save_btn_wrapper flex justify-center items-center">
+        <AppButton label="Save Farm Plan" v-on:on-submit="handleSaveFarmPlan(farmPlan)" />
+      </section>
+    </template>
   </div>
 </template>
+
+<style scoped>
+.result {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.result__status {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+  padding: 2rem 1rem;
+}
+
+.result__status--error {
+  color: #dc2626;
+}
+
+.result__header {
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #0f766e, #0891b2);
+  color: #ecfeff;
+  padding: 1.5rem 1.75rem;
+}
+
+.result__eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.result__species {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+}
+
+.result__stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat__value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.stat__label {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.result__section h4 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.water-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.water-grid__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.water-grid__row dt {
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.water-grid__row dd {
+  margin: 0;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.85rem;
+}
+
+.card-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.card {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+}
+
+.card h5 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.card p {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.card__link {
+  font-size: 0.8rem;
+  color: #0891b2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.card__link:hover {
+  text-decoration: underline;
+}
+</style>

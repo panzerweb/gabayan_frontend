@@ -26,8 +26,8 @@ export const useFarmPlanStore = defineStore('farmPlan', () => {
       const result = await createPlan(payload)
 
       farmPlan.value = result
-    } catch (err: any) {
-      error.value = err.message ?? 'Failed generating farm plan'
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Failed generating farm plan'
     } finally {
       loading.value = false
     }
@@ -36,6 +36,7 @@ export const useFarmPlanStore = defineStore('farmPlan', () => {
   function clearPlan() {
     request.value = null
     farmPlan.value = null
+    error.value = null
   }
 
   return {

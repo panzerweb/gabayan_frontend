@@ -1,6 +1,8 @@
 import type { RouteRecordRaw } from 'vue-router'
 import GenerateFarmPlanView from './views/GenerateFarmPlanView.vue'
 import FarmPlanResultView from './views/FarmPlanResultView.vue'
+import FarmsView from './views/FarmsView.vue'
+import FarmDetail from './views/FarmDetail.vue'
 
 export const farmRoutes: RouteRecordRaw[] = [
   {
@@ -10,8 +12,19 @@ export const farmRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/farm-plan/result',
-    name: 'Farm Plan Result',
+    name: 'farm-plan-result',
     component: FarmPlanResultView,
+  },
+  {
+    path: '/farms',
+    name: 'farms',
+    component: FarmsView,
+  },
+  {
+    path: '/farms/:id',
+    name: 'farm-detail',
+    component: FarmDetail,
+    props: true,
   },
 ]
 

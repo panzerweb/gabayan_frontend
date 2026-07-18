@@ -1,21 +1,5 @@
 <script setup lang="ts">
 import FarmPlanForm from '../components/FarmPlanForm.vue'
-
-import { useFarmPlanStore } from '@/stores/farmPlanStore.ts'
-
-import type { FarmPlanRequest } from '../types/farmPlan'
-
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-const farmPlanStore = useFarmPlanStore()
-
-async function handleGenerate(payload: FarmPlanRequest) {
-  await farmPlanStore.generatePlan(payload)
-
-  router.push('/farm-plan/result')
-}
 </script>
 
 <template>
@@ -27,7 +11,7 @@ async function handleGenerate(payload: FarmPlanRequest) {
         Let AI create an optimized aquaculture farming strategy.
       </p>
 
-      <FarmPlanForm :loading="farmPlanStore.loading" @submit="handleGenerate" />
+      <FarmPlanForm />
     </div>
   </div>
 </template>

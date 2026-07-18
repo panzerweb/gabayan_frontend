@@ -12,12 +12,12 @@ const navItems = [
   {
     name: 'Farm Plan',
     icon: '📋',
-    route: '/farm-plan',
+    route: '/farms',
   },
   {
-    name: 'AI Chat',
-    icon: '🤖',
-    route: '/ai-chat',
+    name: 'Map',
+    icon: '🗺',
+    route: '/map',
   },
   {
     name: 'Profile',
