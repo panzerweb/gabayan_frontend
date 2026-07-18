@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 
 import type { FarmResponse } from '../types/farmPlan'
-import { getFarmById } from '../services/farmService'
+import { getFarmById, getWaterTargetsByFarmId } from '../services/farmService'
 
 export function useFarmDetail() {
   const farm = ref<FarmResponse | null>(null)
@@ -24,6 +24,13 @@ export function useFarmDetail() {
       const result: FarmResponse | undefined = await getFarmById(id)
 
       if (typeof result !== 'undefined') {
+        try {
+          const waterTargets = await getWaterTargetsByFarmId(id)
+          result.water_targets = waterTargets
+        } catch (err) {
+          console.error('Failed to load water targets:', err)
+          result.water_targets = result.water_targets || []
+        }
         return (farm.value = result)
       }
       if (!result) {

@@ -94,11 +94,26 @@ export interface FarmWaterTarget {
   unit?: string
 }
 
+export interface EquipmentSourcing {
+  recommendedChannel?: string
+  storeName?: string
+  addressOrPlatform?: string
+  coordinates?: {
+    latitude: number
+    longitude: number
+  }
+  searchQueryOrUrl?: string
+  buyingTip?: string
+}
+
 export interface FarmEquipment {
   id: string
   name: string
   purpose?: string
   importance?: string
+  estimatedCost?: number
+  diyAlternative?: string | null
+  sourcing?: EquipmentSourcing
 }
 
 export interface FarmResponse {
