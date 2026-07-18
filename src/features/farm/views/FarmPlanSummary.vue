@@ -1,83 +1,67 @@
 <script setup lang="ts">
-import type { FarmPlanResponse } from '../types/farmPlan'
+import type { FarmResponse } from '../types/farmPlan'
 
 defineProps<{
-  plan: FarmPlanResponse
+  plan: FarmResponse
 }>()
 </script>
 
 <template>
   <div class="summary">
     <header class="summary__header">
-      <p class="summary__eyebrow">Recommended Setup</p>
-      <h3 class="summary__species">{{ plan.speciesName }}</h3>
+      <p class="summary__eyebrow">Farm Setup</p>
+      <h3 class="summary__species">{{ plan.species }}</h3>
 
       <div class="summary__stats">
         <div class="stat">
-          <span class="stat__value">{{ plan.recommendedStockingDensity.toLocaleString() }}</span>
-          <span class="stat__label">Stocking Density</span>
-        </div>
-        <div class="stat">
-          <span class="stat__value">{{ plan.estimatedHarvestDays }}</span>
-          <span class="stat__label">Days to Harvest</span>
+          <span class="stat__value">{{ plan.culture_system || 'N/A' }}</span>
+          <span class="stat__label">Culture System</span>
         </div>
       </div>
     </header>
 
-    <section class="summary__section">
-      <h4>Water Parameters</h4>
-      <dl class="water-grid">
-        <div class="water-grid__row">
-          <dt>Salinity</dt>
-          <dd>{{ plan.recommendedWaterParameters.salinity }}</dd>
-        </div>
-        <div class="water-grid__row">
-          <dt>pH</dt>
-          <dd>{{ plan.recommendedWaterParameters.ph }}</dd>
-        </div>
-        <div class="water-grid__row">
-          <dt>Ammonia</dt>
-          <dd>{{ plan.recommendedWaterParameters.ammonia }}</dd>
-        </div>
-        <div class="water-grid__row">
-          <dt>Nitrite</dt>
-          <dd>{{ plan.recommendedWaterParameters.nitrite }}</dd>
-        </div>
-        <div class="water-grid__row">
-          <dt>Dissolved Oxygen</dt>
-          <dd>{{ plan.recommendedWaterParameters.dissolvedOxygen }}</dd>
-        </div>
-        <div class="water-grid__row">
-          <dt>Water Temperature</dt>
-          <dd>{{ plan.recommendedWaterParameters.waterTemperature }}</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="summary__section">
-      <h4>Recommended Equipment</h4>
-      <ul class="card-list">
-        <li v-for="equipment in plan.recommendedToolsEquipments" :key="equipment.id" class="card">
-          <h5>{{ equipment.equipmentName }}</h5>
-          <p>{{ equipment.equipmentDescription }}</p>
-          <a
-            class="card__link"
-            :href="`https://www.google.com/maps?q=${equipment.latitude},${equipment.longitude}`"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ equipment.storeName }}
-          </a>
+    <section class="summary__section" v-if="plan.tasks?.length">
+      <h4>Tasks</h4>
+      <ul class="task-list">
+        <li v-for="task in plan.tasks" :key="task.id" class="task-item">
+          <strong>{{ task.title }}</strong>
+          <span v-if="task.status" class="badge">{{ task.status }}</span>
+          <p v-if="task.description">{{ task.description }}</p>
         </li>
       </ul>
     </section>
 
-    <section class="summary__section">
-      <h4>Recommended Feeds</h4>
+    <section class="summary__section" v-if="plan.water_targets?.length">
+      <h4>Water Targets</h4>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Minimum</th>
+              <th>Maximum</th>
+              <th>Unit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="target in plan.water_targets" :key="target.id">
+              <td>{{ target.parameter }}</td>
+              <td>{{ target.minimum !== undefined ? target.minimum : '-' }}</td>
+              <td>{{ target.maximum !== undefined ? target.maximum : '-' }}</td>
+              <td>{{ target.unit || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="summary__section" v-if="plan.equipments?.length">
+      <h4>Equipments</h4>
       <ul class="card-list">
-        <li v-for="feed in plan.recommendedBrandOfFeeds" :key="feed.id" class="card">
-          <h5>{{ feed.feedsName }}</h5>
-          <p>{{ feed.feedsDescription }}</p>
+        <li v-for="equipment in plan.equipments" :key="equipment.id" class="card">
+          <h5>{{ equipment.name }}</h5>
+          <p v-if="equipment.purpose">{{ equipment.purpose }}</p>
+          <span v-if="equipment.importance" class="badge">{{ equipment.importance }} Importance</span>
         </li>
       </ul>
     </section>
@@ -125,6 +109,7 @@ defineProps<{
 .stat__value {
   font-size: 1.5rem;
   font-weight: 700;
+  text-transform: capitalize;
 }
 
 .stat__label {
@@ -138,33 +123,61 @@ defineProps<{
   color: #0f172a;
 }
 
-.water-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.5rem 1.5rem;
+.task-list {
+  padding: 0;
   margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.task-item {
+  padding: 1rem;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
 }
 
-.water-grid__row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.water-grid__row dt {
-  color: #475569;
-  font-size: 0.85rem;
-}
-
-.water-grid__row dd {
-  margin: 0;
-  font-weight: 600;
+.task-item strong {
+  display: inline-block;
+  margin-bottom: 0.25rem;
   color: #0f172a;
+}
+
+.task-item p {
+  margin: 0;
   font-size: 0.85rem;
+  color: #475569;
+}
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.data-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .card-list {
@@ -196,14 +209,14 @@ defineProps<{
   line-height: 1.4;
 }
 
-.card__link {
-  font-size: 0.8rem;
-  color: #0891b2;
-  text-decoration: none;
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
   font-weight: 600;
-}
-
-.card__link:hover {
-  text-decoration: underline;
+  margin-left: 0.5rem;
 }
 </style>
