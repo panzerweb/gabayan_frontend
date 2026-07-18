@@ -11,6 +11,10 @@ export async function getFarmById(farmId: string): Promise<FarmResponse | undefi
   return response.data.data
 }
 
+export async function deleteFarm(farmId: string): Promise<void> {
+  await apiClient.delete(`/api/farms/${farmId}`)
+}
+
 export async function getWaterTargetsByFarmId(farmId: string): Promise<FarmWaterTarget[]> {
   const response = await apiClient.get<{ data: any[] }>(`/api/farms/${farmId}/water-targets`)
   // Map backend response fields to frontend interface

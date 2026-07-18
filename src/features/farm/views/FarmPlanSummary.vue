@@ -4,13 +4,27 @@ import type { FarmResponse } from '../types/farmPlan'
 defineProps<{
   plan: FarmResponse
 }>()
+
+defineEmits<{
+  (e: 'delete', id: string): void
+}>()
 </script>
 
 <template>
   <div class="summary">
     <header class="summary__header">
-      <p class="summary__eyebrow">Farm Setup</p>
-      <h3 class="summary__species">{{ plan.species }}</h3>
+      <div class="summary__header-top">
+        <div class="summary__header-titles">
+          <p class="summary__eyebrow">Farm Setup</p>
+          <h3 class="summary__species">{{ plan.species }}</h3>
+        </div>
+        <button class="summary__delete-btn" @click="$emit('delete', plan.id)" title="Delete Farm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
 
       <div class="summary__stats">
         <div class="stat">
@@ -71,6 +85,36 @@ defineProps<{
   background: linear-gradient(135deg, #0f766e, #0891b2);
   color: #ecfeff;
   padding: 1.5rem 1.75rem;
+}
+
+.summary__header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.summary__header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary__delete-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #ecfeff;
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summary__delete-btn:hover {
+  background: rgba(220, 38, 38, 0.8);
+  color: #ffffff;
 }
 
 .summary__eyebrow {
