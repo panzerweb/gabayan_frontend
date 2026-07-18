@@ -1,0 +1,52 @@
+{
+  "welcome": "Maligayang Pagdating",
+  "how_are_you": "Kamusta",
+  "nav": {
+    "home": "Home",
+    "about": "Tungkol",
+    "contact": "Makipag-ugnayan",
+    "login": "Mag-log in",
+    "logout": "Mag-log out",
+    "register": "Mag-register"
+  },
+  "buttons": {
+    "submit": "Ipasa",
+    "cancel": "Kanselahin",
+    "save": "I-save",
+    "delete": "Tanggalin",
+    "edit": "I-edit ang",
+    "confirm": "Kumpirmahin",
+    "back": "Bumalik",
+    "next": "Susunod",
+    "search": "Maghanap",
+    "close": "Isara",
+    "generate": "Mag Generate"
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "required": "Kinakailangan",
+    "invalid_email": "Hindi wastong email address",
+    "placeholder_search": "Maghanap dito..."
+  },
+  "messages": {
+    "success": "Tagumpay!",
+    "error": "May nangyaring mali",
+    "loading": "Naglo-load...",
+    "not_found": "Hindi natagpuan",
+    "session_expired": "Nag-expire ang iyong session",
+    "confirm_delete": "Sigurado ka bang gusto mong tanggalin ito?"
+  },
+  "common": {
+    "yes": "Oo",
+    "no": "Hindi",
+    "ok": "Sige",
+    "language": "Wika",
+    "settings": "Mga Setting",
+    "profile": "Profile",
+    "help": "Tulong",
+    "terms": "Mga Tuntunin",
+    "privacy": "Patakaran sa Privacy"
+  }
+}   

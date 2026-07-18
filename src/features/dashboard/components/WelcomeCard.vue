@@ -2,6 +2,10 @@
 import { useAuthStore } from '@/stores/auth'
 import { computed } from 'vue'
 
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
+
 const authStore = useAuthStore()
 
 const userName = computed(() => {
@@ -25,7 +29,7 @@ const userName = computed(() => {
     <div class="relative z-10">
       <p class="mb-2 text-sm font-medium text-blue-100">Welcome back 👋</p>
 
-      <h1 class="text-3xl font-bold tracking-tight">Welcome, {{ userName }}</h1>
+      <h1 class="text-3xl font-bold tracking-tight">{{ t('how_are_you')}}, {{ userName }}</h1>
 
       <p class="mt-3 max-w-lg text-sm text-blue-100">
         Manage your aquaculture journey, monitor your farm progress, and get intelligent insights
