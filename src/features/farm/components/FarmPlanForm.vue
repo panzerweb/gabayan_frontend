@@ -137,16 +137,89 @@ function handleReset() {
 
   store.clearPlan()
 }
+
+function applyPreset(preset: number) {
+  if (preset === 1) {
+    Object.assign(form, {
+      species: 'bangus',
+      cultureSystem: 'cage',
+      farmArea: 100,
+      stockingDensity: 40,
+      waterSource: 'Marine / Coastal Bay',
+      powerInfrastructure: 'Solar',
+      laborAvailability: 'Hired Help',
+      productionGoal: 'Commercial Sale / Wholesale Market',
+      targetCycleDuration: 135,
+      averageTemperature: 29,
+      initialStockingWeightGrams: 20,
+      targetHarvestWeightGrams: 400,
+      feedPreference: 'Commercial Pellets',
+      feedCostPerKg: 40,
+      budget: 165000,
+      targetSellingPrice: 160
+    })
+  } else if (preset === 2) {
+    Object.assign(form, {
+      species: 'tilapia',
+      cultureSystem: 'pond',
+      farmArea: 1000,
+      stockingDensity: 4,
+      waterSource: 'River, Irrigation Canal, or Deep Well',
+      powerInfrastructure: 'Grid',
+      laborAvailability: 'Solo / Family',
+      productionGoal: 'Commercial Sale & Local Market Supply',
+      targetCycleDuration: 110,
+      averageTemperature: 28,
+      initialStockingWeightGrams: 5,
+      targetHarvestWeightGrams: 300,
+      feedPreference: 'Commercial Pellets',
+      feedCostPerKg: 38,
+      budget: 80000,
+      targetSellingPrice: 120
+    })
+  } else if (preset === 3) {
+    Object.assign(form, {
+      species: 'pasayan',
+      cultureSystem: 'pond',
+      farmArea: 2500,
+      stockingDensity: 50,
+      waterSource: 'Brackishwater / Estuary / Tidal Creek',
+      powerInfrastructure: 'Grid',
+      laborAvailability: 'Hired Help',
+      productionGoal: 'Commercial Sale / High-Value Domestic & Export Market',
+      targetCycleDuration: 100,
+      averageTemperature: 29,
+      initialStockingWeightGrams: 0.05,
+      targetHarvestWeightGrams: 20,
+      feedPreference: 'Commercial Pellets',
+      feedCostPerKg: 72,
+      budget: 320000,
+      targetSellingPrice: 280
+    })
+  }
+}
 </script>
 
 <template>
   <div class="farm-plan">
     <form class="farm-plan__form" novalidate @submit.prevent="handleSubmit">
+      <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <h3>Generating Plan...</h3>
+        <p>Please wait while we calculate the optimal parameters for your setup.</p>
+      </div>
+
       <h2 class="farm-plan__title">Generate Farm Plan</h2>
       <p class="farm-plan__subtitle">
         Tell us about your setup and we’ll recommend a stocking plan, feeds, equipment, and water
         parameters.
       </p>
+
+      <div class="farm-plan__presets">
+        <button type="button" class="btn btn--ghost" @click="applyPreset(1)">Preset 1: Bangus Cage</button>
+        <button type="button" class="btn btn--ghost" @click="applyPreset(2)">Preset 2: Tilapia Pond</button>
+        <button type="button" class="btn btn--ghost" @click="applyPreset(3)">Preset 3: Pasayan Pond</button>
+      </div>
 
       <fieldset class="fieldset">
         <legend>Farm Setup</legend>
@@ -188,7 +261,7 @@ function handleReset() {
           </div>
 
           <div class="field">
-            <label for="stockingDensity">Stocking Density (per m²)</label>
+            <label for="stockingDensity">Stocking Density {{ form.cultureSystem === 'cage' ? '(per m³)' : '(per m²)' }}</label>
             <input
               id="stockingDensity"
               v-model.number="form.stockingDensity"
@@ -418,6 +491,7 @@ function handleReset() {
 }
 
 .farm-plan__form {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -425,6 +499,51 @@ function handleReset() {
   border: 1px solid #e2e8f0;
   border-radius: 0.85rem;
   background: #ffffff;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: inherit;
+  text-align: center;
+}
+
+.loading-overlay h3 {
+  margin: 1.25rem 0 0.5rem;
+  color: #0f766e;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.loading-overlay p {
+  color: #475569;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.spinner {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 4px solid #e2e8f0;
+  border-top-color: #0f766e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .farm-plan__title {
@@ -437,6 +556,17 @@ function handleReset() {
   margin: -1rem 0 0;
   font-size: 0.875rem;
   color: #64748b;
+}
+
+.farm-plan__presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.farm-plan__presets .btn {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.8rem;
 }
 
 .fieldset {

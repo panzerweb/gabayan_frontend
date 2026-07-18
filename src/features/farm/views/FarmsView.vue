@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 
 import type { FarmResponse } from '../types/farmPlan'
 import { useFarm } from '../composables/useFarm'
+import { globalConfirmPopup } from '@/components/popups/globalPopup'
 
 const { farms, isLoading, getFarms, removeFarm } = useFarm()
 const router = useRouter()
@@ -23,7 +24,14 @@ function goToDetail(plan: FarmResponse) {
 }
 
 async function handleDelete(id: string) {
-  if (window.confirm('Are you sure you want to delete this farm?')) {
+  const isDelete = await globalConfirmPopup(
+    'Delete Farm',
+    'warning',
+    'Delete',
+    'Cancel',
+    'Are you sure you want to delete this farm? This action cannot be undone.'
+  )
+  if (isDelete) {
     try {
       if (removeFarm) {
         await removeFarm(id)

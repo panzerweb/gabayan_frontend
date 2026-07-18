@@ -3,9 +3,10 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useFarmDetail } from '../composables/useFarmDetail.ts'
-import FarmSummary from './FarmSummary.vue'
 import RecommendationChecklist from '../components/RecommendationChecklist.vue'
+import FarmPlanSummary from './FarmSummary.vue'
 import type { FarmEquipment } from '../types/farmPlan.ts'
+import { globalConfirmPopup } from '@/components/popups/globalPopup'
 
 const router = useRouter()
 
@@ -20,7 +21,14 @@ onMounted(() => {
 })
 
 async function handleFarmDelete(id: string) {
-  if (window.confirm('Are you sure you want to delete this farm?')) {
+  const isDelete = await globalConfirmPopup(
+    'Delete Farm',
+    'warning',
+    'Delete',
+    'Cancel',
+    'Are you sure you want to delete this farm? This action cannot be undone.'
+  )
+  if (isDelete) {
     try {
       await removeFarm(id)
       router.push({ name: 'farms' })
