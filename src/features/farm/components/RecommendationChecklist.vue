@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import type { FarmEquipment } from '../types/farmPlan'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 defineProps<{
   equipments: FarmEquipment[]
@@ -16,6 +19,11 @@ function toggleEquipment(equipment: FarmEquipment) {
     // We cast it if needed, or update the interface if backend adds it
   })
 }
+
+function navigateToEquipment(id: string | number) {
+  if (!id) return
+  router.push({ name: 'equipment-detail', params: { id } })
+}
 </script>
 
 <template>
@@ -27,8 +35,9 @@ function toggleEquipment(equipment: FarmEquipment) {
         v-for="equipment in equipments"
         :key="equipment.id"
         class="item"
+        @click="navigateToEquipment(equipment.id)"
       >
-        <label class="item__check">
+        <label class="item__check" @click.stop>
           <input type="checkbox" @change="toggleEquipment(equipment)" />
 
           <span>
@@ -76,6 +85,12 @@ function toggleEquipment(equipment: FarmEquipment) {
   padding: 1rem;
   margin-bottom: 0.75rem;
   transition: 0.2s;
+  cursor: pointer;
+}
+
+.item:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
 }
 
 .item.bought {
