@@ -4,8 +4,9 @@ import { useRouter } from 'vue-router'
 
 import type { FarmResponse } from '../types/farmPlan'
 import { useFarm } from '../composables/useFarm'
+import { globalConfirmPopup } from '@/components/popups/globalPopup'
 
-const { farms, isLoading, getFarms } = useFarm()
+const { farms, isLoading, getFarms, removeFarm } = useFarm()
 const router = useRouter()
 
 onMounted(() => {
@@ -20,6 +21,26 @@ function goToDetail(plan: FarmResponse) {
       id: plan.id,
     },
   })
+}
+
+async function handleDelete(id: string) {
+  const isDelete = await globalConfirmPopup(
+    'Delete Farm',
+    'warning',
+    'Delete',
+    'Cancel',
+    'Are you sure you want to delete this farm? This action cannot be undone.'
+  )
+  if (isDelete) {
+    try {
+      if (removeFarm) {
+        await removeFarm(id)
+      }
+    } catch (err) {
+      console.error('Failed to delete farm', err)
+      alert('Failed to delete farm. Please try again.')
+    }
+  }
 }
 </script>
 
@@ -57,6 +78,12 @@ function goToDetail(plan: FarmResponse) {
             {{ farm.equipments?.length || 0 }} Equipments
           </p>
         </div>
+        <button class="plan-card__delete-btn" @click.stop="handleDelete(farm.id)" title="Delete Farm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
       </li>
     </ul>
   </div>
@@ -143,5 +170,24 @@ function goToDetail(plan: FarmResponse) {
   font-size: 0.75rem;
   color: #94a3b8;
   white-space: nowrap;
+}
+
+.plan-card__delete-btn {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.plan-card__delete-btn:hover {
+  background: #fee2e2;
+  color: #dc2626;
 }
 </style>

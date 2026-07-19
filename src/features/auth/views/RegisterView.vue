@@ -6,22 +6,26 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const name = ref('')
+const first_name = ref('')
+const last_name = ref('')
+const birthdate = ref('')
 const email = ref('')
 const password = ref('')
-const password_confirmation = ref('')
+const confirm_password = ref('')
 
 const handleRegister = async () => {
-  if (password.value !== password_confirmation.value) {
+  if (password.value !== confirm_password.value) {
     alert("Passwords do not match!")
     return
   }
 
   const success = await authStore.register({
-    name: name.value,
+    first_name: first_name.value,
+    last_name: last_name.value,
+    birthdate: birthdate.value,
     email: email.value,
     password: password.value,
-    password_confirmation: password_confirmation.value
+    confirm_password: confirm_password.value
   })
   
   if (success) {
@@ -40,17 +44,48 @@ const handleRegister = async () => {
       
       <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
         <div class="space-y-4">
+          <div class="flex space-x-4">
+            <div class="w-1/2">
+              <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+              <div class="mt-1">
+                <input
+                  id="first_name"
+                  name="first_name"
+                  type="text"
+                  required
+                  v-model="first_name"
+                  class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Juan"
+                />
+              </div>
+            </div>
+
+            <div class="w-1/2">
+              <label for="last_name" class="block text-sm font-medium text-gray-700">Last Name</label>
+              <div class="mt-1">
+                <input
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  required
+                  v-model="last_name"
+                  class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Dela Cruz"
+                />
+              </div>
+            </div>
+          </div>
+
           <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <label for="birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
             <div class="mt-1">
               <input
-                id="name"
-                name="name"
-                type="text"
+                id="birthdate"
+                name="birthdate"
+                type="date"
                 required
-                v-model="name"
+                v-model="birthdate"
                 class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Juan Dela Cruz"
               />
             </div>
           </div>
@@ -88,15 +123,15 @@ const handleRegister = async () => {
           </div>
 
           <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
             <div class="mt-1">
               <input
-                id="password_confirmation"
-                name="password_confirmation"
+                id="confirm_password"
+                name="confirm_password"
                 type="password"
                 autocomplete="new-password"
                 required
-                v-model="password_confirmation"
+                v-model="confirm_password"
                 class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="••••••••"
               />

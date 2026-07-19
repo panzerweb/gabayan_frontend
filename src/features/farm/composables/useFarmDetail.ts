@@ -1,12 +1,13 @@
 import { ref } from 'vue'
 
 import type { FarmResponse } from '../types/farmPlan'
-import { getFarmById, getWaterTargetsByFarmId } from '../services/farmService'
+import { getFarmById, getWaterTargetsByFarmId, deleteFarm } from '../services/farmService'
 
 export function useFarmDetail() {
   const farm = ref<FarmResponse | null>(null)
 
   const loading = ref(false)
+  const isDeleting = ref(false)
 
   const error = ref<string | null>(null)
 
@@ -44,11 +45,27 @@ export function useFarmDetail() {
     }
   }
 
+  async function removeFarm(id: string) {
+    isDeleting.value = true
+    error.value = null
+    try {
+      await deleteFarm(id)
+      farm.value = null
+    } catch (err: unknown) {
+      error.value = err instanceof Error ? err.message : 'Failed to delete farm'
+      throw err
+    } finally {
+      isDeleting.value = false
+    }
+  }
+
   return {
     farm,
     loading,
+    isDeleting,
     error,
     notFound,
     getFarmDetail,
+    removeFarm,
   }
 }

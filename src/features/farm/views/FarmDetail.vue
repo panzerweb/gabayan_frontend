@@ -3,9 +3,10 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { useFarmDetail } from '../composables/useFarmDetail.ts'
-import FarmSummary from './FarmSummary.vue'
 import RecommendationChecklist from '../components/RecommendationChecklist.vue'
+import FarmPlanSummary from './FarmSummary.vue'
 import type { FarmEquipment } from '../types/farmPlan.ts'
+import { globalConfirmPopup } from '@/components/popups/globalPopup'
 
 const router = useRouter()
 
@@ -13,11 +14,30 @@ const props = defineProps<{
   id: string
 }>()
 
-const { farm, loading, error, notFound, getFarmDetail } = useFarmDetail()
+const { farm, loading, error, notFound, getFarmDetail, removeFarm } = useFarmDetail()
 
 onMounted(() => {
   getFarmDetail(props.id)
 })
+
+async function handleFarmDelete(id: string) {
+  const isDelete = await globalConfirmPopup(
+    'Delete Farm',
+    'warning',
+    'Delete',
+    'Cancel',
+    'Are you sure you want to delete this farm? This action cannot be undone.'
+  )
+  if (isDelete) {
+    try {
+      await removeFarm(id)
+      router.push({ name: 'farms' })
+    } catch (err) {
+      console.error('Failed to delete farm', err)
+      alert('Failed to delete farm. Please try again.')
+    }
+  }
+}
 
 async function toggleEquipment(equipment: FarmEquipment) {
   console.log(`Update farm equipment: ${equipment.id}`, equipment)
@@ -38,7 +58,7 @@ async function toggleEquipment(equipment: FarmEquipment) {
       This farm couldn't be found. It may have been removed.
     </p>
 
-    <FarmSummary v-else-if="farm" :plan="farm" />
+    <FarmPlanSummary v-else-if="farm" :plan="farm" @delete="handleFarmDelete" />
 
     <RecommendationChecklist
       v-if="farm"

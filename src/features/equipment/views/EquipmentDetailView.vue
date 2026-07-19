@@ -52,6 +52,12 @@ function isUrl(str: string): boolean {
 function goBack() {
   router.back()
 }
+
+function goToOrder() {
+  if (equipment.value) {
+    router.push({ name: 'equipment-order', params: { id: equipment.value.id } })
+  }
+}
 </script>
 
 <template>
@@ -70,7 +76,10 @@ function goBack() {
 
     <div v-else class="detail-container">
       <header class="header">
-        <h2>{{ equipment.name }}</h2>
+        <div class="header-title-row">
+          <h2>{{ equipment.name }}</h2>
+          <button class="order-now-btn" @click="goToOrder">🛒 Order Now</button>
+        </div>
         <span class="importance-badge">{{ equipment.importance }} Importance</span>
       </header>
 
@@ -189,10 +198,42 @@ function goBack() {
   padding-bottom: 1.5rem;
 }
 
-.header h2 {
-  margin: 0 0 0.5rem;
+.header-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.header-title-row h2 {
+  margin: 0;
   font-size: 2rem;
   color: #0f172a;
+}
+
+.order-now-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.order-now-btn:hover {
+  background-color: #059669;
+}
+
+.order-now-btn:active {
+  transform: scale(0.98);
 }
 
 .importance-badge {
