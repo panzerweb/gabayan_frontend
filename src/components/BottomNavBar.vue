@@ -19,6 +19,11 @@ const navItems = [
     icon: '👤',
     route: '/profile',
   },
+  {
+    name: 'Premium',
+    icon: '⭐',
+    route: '/subscription',
+  },
 ]
 
 function isActive(path: string) {

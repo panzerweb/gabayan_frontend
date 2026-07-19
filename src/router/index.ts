@@ -5,10 +5,23 @@ import authRoutes from '@/features/auth'
 import profileRoutes from '@/features/profile'
 import equipmentRoutes from '@/features/equipment'
 import { createRouter, createWebHistory } from 'vue-router'
+import subscriptionRoutes from '@/features/subscription/view'
+import speciesRoutes from '@/features/species'
+import diseasesRoutes from '@/features/diseases'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [...dashboardRoutes, ...farmRoutes, ...mapRoutes, ...authRoutes, ...profileRoutes, ...equipmentRoutes],
+  routes: [
+    ...dashboardRoutes,
+    ...farmRoutes,
+    ...mapRoutes,
+    ...authRoutes,
+    ...profileRoutes,
+    ...equipmentRoutes,
+    ...subscriptionRoutes,
+    ...speciesRoutes,
+    ...diseasesRoutes,
+  ],
 })
 
 router.beforeEach((to, from, next) => {
