@@ -4,13 +4,15 @@ import mapRoutes from '@/features/map'
 import authRoutes from '@/features/auth'
 import profileRoutes from '@/features/profile'
 import equipmentRoutes from '@/features/equipment'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import subscriptionRoutes from '@/features/subscription/view'
 import speciesRoutes from '@/features/species'
 import diseasesRoutes from '@/features/diseases'
+import logsRoutes from '@/features/logs'
+import aiChatRoutes from '@/features/ai-chat'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     ...dashboardRoutes,
     ...farmRoutes,
@@ -21,6 +23,8 @@ const router = createRouter({
     ...subscriptionRoutes,
     ...speciesRoutes,
     ...diseasesRoutes,
+    ...logsRoutes,
+    ...aiChatRoutes,
   ],
 })
 
