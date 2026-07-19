@@ -11,10 +11,10 @@ const last_name = ref('')
 const birthdate = ref('')
 const email = ref('')
 const password = ref('')
-const password_confirmation = ref('')
+const confirm_password = ref('')
 
 const handleRegister = async () => {
-  if (password.value !== password_confirmation.value) {
+  if (password.value !== confirm_password.value) {
     alert("Passwords do not match!")
     return
   }
@@ -25,7 +25,7 @@ const handleRegister = async () => {
     birthdate: birthdate.value,
     email: email.value,
     password: password.value,
-    password_confirmation: password_confirmation.value
+    confirm_password: confirm_password.value
   })
   
   if (success) {
@@ -123,15 +123,15 @@ const handleRegister = async () => {
           </div>
 
           <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label for="confirm_password" class="block text-sm font-medium text-gray-700">Confirm Password</label>
             <div class="mt-1">
               <input
-                id="password_confirmation"
-                name="password_confirmation"
+                id="confirm_password"
+                name="confirm_password"
                 type="password"
                 autocomplete="new-password"
                 required
-                v-model="password_confirmation"
+                v-model="confirm_password"
                 class="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 placeholder="••••••••"
               />
