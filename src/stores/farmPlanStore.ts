@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import type { FarmPlanPayload, FarmPlanRequest, FarmPlanResponse } from '@/features/farm/types/farmPlan'
+import type { FarmPlanPayload, FarmPlanRequest } from '@/features/farm/types/farmPlan'
 
 import { useFarmPlan } from '@/features/farm/composables/useFarmPlan'
 

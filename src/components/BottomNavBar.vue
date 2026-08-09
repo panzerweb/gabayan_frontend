@@ -3,25 +3,31 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 
-const navItems = [
+interface NavItem {
+  name: string
+  icon: string
+  route: string
+}
+
+const navItems: NavItem[] = [
   {
     name: 'Dashboard',
-    icon: '🏠',
+    icon: 'dashboard',
     route: '/',
   },
   {
     name: 'Farm Plan',
-    icon: '📋',
+    icon: 'agriculture',
     route: '/farms',
   },
   {
     name: 'Profile',
-    icon: '👤',
+    icon: 'account_box',
     route: '/profile',
   },
   {
     name: 'Premium',
-    icon: '⭐',
+    icon: 'diamond',
     route: '/subscription',
   },
 ]
@@ -43,7 +49,7 @@ function isActive(path: string) {
         class="flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-xs transition"
         :class="isActive(item.route) ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'"
       >
-        <span class="text-xl">
+        <span class="text-xl material-icons">
           {{ item.icon }}
         </span>
 

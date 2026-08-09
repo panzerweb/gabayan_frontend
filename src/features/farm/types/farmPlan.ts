@@ -162,3 +162,11 @@ export interface FarmResponse {
   plan_data?: FarmPlanResponse
 }
 
+export interface SlimFarmResponse {
+  id: string
+  user_id: string
+  species: string
+  culture_system: string
+  created_at: string
+  equipment_count: 6
+}

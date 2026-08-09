@@ -98,9 +98,7 @@ function validate(): boolean {
   formErrors.averageTemperature =
     form.averageTemperature > 0 ? '' : 'Enter an average temperature greater than 0.'
   formErrors.initialStockingWeightGrams =
-    form.initialStockingWeightGrams > 0
-      ? ''
-      : 'Enter an initial stocking weight greater than 0.'
+    form.initialStockingWeightGrams > 0 ? '' : 'Enter an initial stocking weight greater than 0.'
   formErrors.targetHarvestWeightGrams =
     form.targetHarvestWeightGrams > form.initialStockingWeightGrams
       ? ''
@@ -156,7 +154,7 @@ function applyPreset(preset: number) {
       feedPreference: 'Commercial Pellets',
       feedCostPerKg: 40,
       budget: 165000,
-      targetSellingPrice: 160
+      targetSellingPrice: 160,
     })
   } else if (preset === 2) {
     Object.assign(form, {
@@ -175,7 +173,7 @@ function applyPreset(preset: number) {
       feedPreference: 'Commercial Pellets',
       feedCostPerKg: 38,
       budget: 80000,
-      targetSellingPrice: 120
+      targetSellingPrice: 120,
     })
   } else if (preset === 3) {
     Object.assign(form, {
@@ -194,7 +192,7 @@ function applyPreset(preset: number) {
       feedPreference: 'Commercial Pellets',
       feedCostPerKg: 72,
       budget: 320000,
-      targetSellingPrice: 280
+      targetSellingPrice: 280,
     })
   }
 }
@@ -202,13 +200,7 @@ function applyPreset(preset: number) {
 
 <template>
   <div class="farm-plan">
-    <form class="farm-plan__form" novalidate @submit.prevent="handleSubmit">
-      <div v-if="loading" class="loading-overlay">
-        <div class="spinner"></div>
-        <h3>Generating Plan...</h3>
-        <p>Please wait while we calculate the optimal parameters for your setup.</p>
-      </div>
-
+    <form class="farm-plan__form" novalidate @submit.prevent="handleSubmit" v-if="!loading">
       <h2 class="farm-plan__title">Generate Farm Plan</h2>
       <p class="farm-plan__subtitle">
         Tell us about your setup and we’ll recommend a stocking plan, feeds, equipment, and water
@@ -216,9 +208,15 @@ function applyPreset(preset: number) {
       </p>
 
       <div class="farm-plan__presets">
-        <button type="button" class="btn btn--ghost" @click="applyPreset(1)">Preset 1: Bangus Cage</button>
-        <button type="button" class="btn btn--ghost" @click="applyPreset(2)">Preset 2: Tilapia Pond</button>
-        <button type="button" class="btn btn--ghost" @click="applyPreset(3)">Preset 3: Pasayan Pond</button>
+        <button type="button" class="btn btn--ghost" @click="applyPreset(1)">
+          Preset 1: Bangus Cage
+        </button>
+        <button type="button" class="btn btn--ghost" @click="applyPreset(2)">
+          Preset 2: Tilapia Pond
+        </button>
+        <button type="button" class="btn btn--ghost" @click="applyPreset(3)">
+          Preset 3: Pasayan Pond
+        </button>
       </div>
 
       <fieldset class="fieldset">
@@ -227,7 +225,11 @@ function applyPreset(preset: number) {
           <div class="field">
             <label for="species">Species</label>
             <select id="species" v-model="form.species">
-              <option v-for="option in fishSpeciesOptions" :key="option.value" :value="option.value">
+              <option
+                v-for="option in fishSpeciesOptions"
+                :key="option.value"
+                :value="option.value"
+              >
                 {{ option.label }}
               </option>
             </select>
@@ -261,7 +263,9 @@ function applyPreset(preset: number) {
           </div>
 
           <div class="field">
-            <label for="stockingDensity">Stocking Density {{ form.cultureSystem === 'cage' ? '(per m³)' : '(per m²)' }}</label>
+            <label for="stockingDensity"
+              >Stocking Density {{ form.cultureSystem === 'cage' ? '(per m³)' : '(per m²)' }}</label
+            >
             <input
               id="stockingDensity"
               v-model.number="form.stockingDensity"
@@ -476,6 +480,19 @@ function applyPreset(preset: number) {
 
       <p v-if="error" class="farm-plan__error" role="alert">{{ error }}</p>
     </form>
+
+    <!-- Loading State -->
+    <div v-else class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
+      <div
+        class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-emerald-600"
+      ></div>
+
+      <h2 class="mt-6 text-xl font-bold text-gray-900">Generating your farm plan</h2>
+
+      <p class="mt-2 max-w-md px-6 text-center text-sm text-gray-500">
+        We're analyzing your farm setup and preparing your recommendations.
+      </p>
+    </div>
   </div>
 </template>
 

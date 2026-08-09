@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useFarm } from '@/features/farm/composables/useFarm'
 
 const { t } = useI18n()
+const { farms, getFarms } = useFarm()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -29,9 +31,13 @@ const changeLanguage = (lang: string) => {
   document.documentElement.setAttribute('lang', lang) // Accessibility
 }
 
-onMounted(() => {
+onMounted(async () => {
   authStore.fetchUser()
+  await getFarms()
+
+  console.log(selectedLanguage.value);
 })
+
 
 const user = computed(() => {
   const data = authStore.user || {}
@@ -51,9 +57,7 @@ const user = computed(() => {
       data.avatar_url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0D8ABC&color=fff`,
     stats: [
-      { label: 'Active Farms', value: 3 },
-      { label: 'Total Yield', value: '1,250 kg' },
-      { label: 'Alerts', value: 2 },
+      { label: 'Active Farms', value: farms.value?.length },
     ],
   }
 })
