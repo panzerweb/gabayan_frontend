@@ -1,8 +1,8 @@
 import apiClient from '@/services/apiClient'
-import type { FarmResponse, FarmWaterTarget } from '../types/farmPlan'
+import type { FarmResponse, FarmWaterTarget, SlimFarmResponse } from '../types/farmPlan'
 
-export async function fetchFarms(): Promise<FarmResponse[]> {
-  const response = await apiClient.get<{ data: FarmResponse[] }>('/api/farms')
+export async function fetchFarms(): Promise<SlimFarmResponse[]> {
+  const response = await apiClient.get<{ data: SlimFarmResponse[] }>('/api/farms')
   return response.data.data
 }
 

@@ -17,7 +17,8 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://endurable-excuse-earthlike.ngrok-free.dev',
+        // target: 'https://endurable-excuse-earthlike.ngrok-free.dev',
+        target: 'https://aqua-lens-api.onrender.com', // Changed to the production server
         changeOrigin: true,
       }
     }

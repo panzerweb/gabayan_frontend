@@ -1,13 +1,13 @@
 import { ref } from 'vue'
-import type { FarmResponse } from '../types/farmPlan'
+import type { SlimFarmResponse } from '../types/farmPlan'
 import { fetchFarms, deleteFarm } from '../services/farmService'
 
 export function useFarm() {
   const isLoading = ref(false)
   const isDeleting = ref(false)
-  const farms = ref<FarmResponse[] | []>()
+  const farms = ref<SlimFarmResponse[] | []>()
 
-  async function getFarms(): Promise<FarmResponse[]> {
+  async function getFarms(): Promise<SlimFarmResponse[]> {
     isLoading.value = true
 
     try {

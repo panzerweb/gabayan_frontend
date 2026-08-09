@@ -2,18 +2,22 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import type { FarmResponse } from '../types/farmPlan'
+import type { SlimFarmResponse } from '../types/farmPlan'
 import { useFarm } from '../composables/useFarm'
 import { globalConfirmPopup } from '@/components/popups/globalPopup'
+import FarmCard from '../components/FarmCard.vue'
 
 const { farms, isLoading, getFarms, removeFarm } = useFarm()
 const router = useRouter()
 
 onMounted(() => {
   getFarms()
+
 })
 
-function goToDetail(plan: FarmResponse) {
+// We pass SlimFarmResponse but we only send the id, so the FarmDetail
+// Being FarmResponse is not an issue I think.
+function goToDetail(plan: SlimFarmResponse) {
   // NOTE: adjust the route name/param below to match your router config.
   router.push({
     name: 'farm-detail',
@@ -42,6 +46,7 @@ async function handleDelete(id: string) {
     }
   }
 }
+
 </script>
 
 <template>
@@ -71,7 +76,8 @@ async function handleDelete(id: string) {
         @click="goToDetail(farm)"
         @keydown.enter="goToDetail(farm)"
       >
-        <div class="plan-card__main">
+      <FarmCard :farm="farm" @handle-delete="handleDelete(farm.id)" />
+        <!-- <div class="plan-card__main">
           <h3>{{ farm.species }}</h3>
           <p class="plan-card__meta">
             {{ farm.culture_system || 'Unknown System' }} ·
@@ -83,7 +89,7 @@ async function handleDelete(id: string) {
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
-        </button>
+        </button> -->
       </li>
     </ul>
   </div>
@@ -132,62 +138,4 @@ async function handleDelete(id: string) {
   gap: 0.65rem;
 }
 
-.plan-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.65rem;
-  background: #ffffff;
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.plan-card:hover,
-.plan-card:focus-visible {
-  border-color: #0891b2;
-  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.15);
-  outline: none;
-}
-
-.plan-card__main h3 {
-  margin: 0 0 0.25rem;
-  font-size: 1rem;
-  color: #0f172a;
-}
-
-.plan-card__meta {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
-.plan-card__date {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  white-space: nowrap;
-}
-
-.plan-card__delete-btn {
-  background: none;
-  border: none;
-  color: #cbd5e1;
-  width: 32px;
-  height: 32px;
-  border-radius: 0.375rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.plan-card__delete-btn:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
 </style>
