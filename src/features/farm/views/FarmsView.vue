@@ -10,9 +10,10 @@ import FarmCard from '../components/FarmCard.vue'
 const { farms, isLoading, getFarms, removeFarm } = useFarm()
 const router = useRouter()
 
-onMounted(() => {
-  getFarms()
+onMounted(async () => {
+  await getFarms()
 
+  console.log(farms.value);
 })
 
 // We pass SlimFarmResponse but we only send the id, so the FarmDetail
